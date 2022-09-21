@@ -9,11 +9,15 @@ public class AuthConnect : MonoBehaviour
     public GameObject signinPanel;
     public GameObject signUpPanel;
 
-    [SerializeField] InputField username, password;
+    private string username, password;
 
-    [SerializeField] InputField usernameSignUp, emailSignUp, passwordSignUp, confirmPasswordSignUp;
+    private string usernameSignUp, emailSignUp, passwordSignUp, confirmPasswordSignUp;
 
-    [SerializeField] Button loginButton;
+    [SerializeField] public InputField usernameEmail;
+
+
+    public Button loginButton;
+    public Button registerButton;
 
     WWWForm form;
 
@@ -64,8 +68,8 @@ public class AuthConnect : MonoBehaviour
 
     public void OnRegisterSubmit()
     {
-        loginButton.interactable = false;
-        StartCoroutine(Login("http://127.0.0.1:8000/api/register"));
+        registerButton.interactable = false;
+        StartCoroutine(Register("http://127.0.0.1:8000/api/register"));
     }
 
     IEnumerator Register(string uri)
@@ -90,4 +94,12 @@ public class AuthConnect : MonoBehaviour
             }
         }
     }
+
+    public void OnLoginEmail(string value) { username = value; }
+    public void OnLoginPassword(string value) { }
+
+    public void OnUsername(string value) { }
+    public void OnEmail(string value) { }
+    public void OnPassword(string value) { }
+    public void OnConfirmPassword(string value) { }
 }
