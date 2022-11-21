@@ -16,9 +16,6 @@ public class AuthConnect : MonoBehaviour
 
     private string usernameSignUp, emailSignUp, passwordSignUp, confirmPasswordSignUp;
 
-    [SerializeField] public InputField usernameEmail;
-
-
     public Button loginButton;
     public Button registerButton;
 
@@ -28,10 +25,10 @@ public class AuthConnect : MonoBehaviour
     {
         var token = PlayerPrefs.GetString("access_token");
         if (token != "") {
-            SceneManager.LoadScene("Lobby");
+            //SceneManager.LoadScene("Lobby");
         } else {
-            changeToSignInTab();
         }
+            changeToSignInTab();
     }
 
     public void changeToSignInTab()
@@ -50,32 +47,26 @@ public class AuthConnect : MonoBehaviour
     public void OnLoginSubmit()
     {
         loginButton.interactable = false;
-        StartCoroutine(Login(apiList.loginUrl));
-    }
-
-    IEnumerator Login(string uri)
-    {
+        Debug.Log(username);
+        Debug.Log(password);
         WWWForm form = new WWWForm();
         form.AddField("email", username);
         form.AddField("password", password);
 
-        using (UnityWebRequest www = UnityWebRequest.Post(uri, form))
-        {
-            yield return www.SendWebRequest();
+        StartCoroutine(
+            Helper.SendData(apiList.loginUrl, form, (responseText, isSuccess) => {
+                if (isSuccess)
+                    setLoginToken(responseText);
+            })
+        );
+    }
 
-            if (www.result != UnityWebRequest.Result.Success)
-            {
-                Debug.Log(www.error);
-            }
-            else
-            {
-                var responseText = www.downloadHandler.text;
-                LoginResponse response = JsonUtility.FromJson<LoginResponse>(responseText);
-                PlayerPrefs.SetString("access_token", response.access_token);
-                PlayerPrefs.SetString("token_type", response.token_type);
-                PlayerPrefs.SetInt("expires_in", response.expires_in);
-            }
-        }
+    public void setLoginToken(string responseText)
+    {
+        LoginResponse response = JsonUtility.FromJson<LoginResponse>(responseText);
+        PlayerPrefs.SetString("access_token", response.access_token);
+        PlayerPrefs.SetString("token_type", response.token_type);
+        PlayerPrefs.SetInt("expires_in", response.expires_in);
     }
 
     public void OnRegisterSubmit()
