@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class AuthConnect : MonoBehaviour
 {
     public GameObject signinPanel;
     public GameObject signUpPanel;
+
+    public ApiList apiList = new ApiList();
 
     private string username, password;
 
@@ -23,7 +26,12 @@ public class AuthConnect : MonoBehaviour
 
     void Start()
     {
-        changeToSignInTab();
+        var token = PlayerPrefs.GetString("access_token");
+        if (token != "") {
+            SceneManager.LoadScene("Lobby");
+        } else {
+            changeToSignInTab();
+        }
     }
 
     public void changeToSignInTab()
@@ -42,14 +50,14 @@ public class AuthConnect : MonoBehaviour
     public void OnLoginSubmit()
     {
         loginButton.interactable = false;
-        StartCoroutine(Login("http://127.0.0.1:8000/api/login"));
+        StartCoroutine(Login(apiList.loginUrl));
     }
 
     IEnumerator Login(string uri)
     {
         WWWForm form = new WWWForm();
-        form.AddField("email", "admin@example.com");
-        form.AddField("password", "admin");
+        form.AddField("email", username);
+        form.AddField("password", password);
 
         using (UnityWebRequest www = UnityWebRequest.Post(uri, form))
         {
@@ -61,7 +69,11 @@ public class AuthConnect : MonoBehaviour
             }
             else
             {
-                Debug.Log("Login Success!");
+                var responseText = www.downloadHandler.text;
+                LoginResponse response = JsonUtility.FromJson<LoginResponse>(responseText);
+                PlayerPrefs.SetString("access_token", response.access_token);
+                PlayerPrefs.SetString("token_type", response.token_type);
+                PlayerPrefs.SetInt("expires_in", response.expires_in);
             }
         }
     }
@@ -69,16 +81,16 @@ public class AuthConnect : MonoBehaviour
     public void OnRegisterSubmit()
     {
         registerButton.interactable = false;
-        StartCoroutine(Register("http://127.0.0.1:8000/api/register"));
+        StartCoroutine(Register(apiList.registerUrl));
     }
 
     IEnumerator Register(string uri)
     {
         WWWForm form = new WWWForm();
-        form.AddField("username", "admin_001");
-        form.AddField("email", "admin@example.com");
-        form.AddField("password", "admin");
-        form.AddField("confirm_password", "admin");
+        form.AddField("username", usernameSignUp);
+        form.AddField("email", emailSignUp);
+        form.AddField("password", passwordSignUp);
+        form.AddField("confirm_password", confirmPasswordSignUp);
 
         using (UnityWebRequest www = UnityWebRequest.Post(uri, form))
         {
@@ -90,16 +102,16 @@ public class AuthConnect : MonoBehaviour
             }
             else
             {
-                Debug.Log("Login Success!");
+                Debug.Log("Register Success!");
             }
         }
     }
 
     public void OnLoginEmail(string value) { username = value; }
-    public void OnLoginPassword(string value) { }
+    public void OnLoginPassword(string value) { password = value; }
 
-    public void OnUsername(string value) { }
-    public void OnEmail(string value) { }
-    public void OnPassword(string value) { }
-    public void OnConfirmPassword(string value) { }
+    public void OnUsername(string value) { usernameSignUp = value; }
+    public void OnEmail(string value) { emailSignUp = value; }
+    public void OnPassword(string value) { passwordSignUp = value; }
+    public void OnConfirmPassword(string value) { confirmPasswordSignUp = value; }
 }

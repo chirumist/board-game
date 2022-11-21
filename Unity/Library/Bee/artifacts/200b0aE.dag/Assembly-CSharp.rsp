@@ -405,6 +405,8 @@
 "Assets/Script/ConnectToServer.cs"
 "Assets/Script/CreateAndJoinRooms.cs"
 "Assets/Script/Loader.cs"
+"Assets/Script/models/ApiList.cs"
+"Assets/Script/models/Response.cs"
 "Assets/Script/PlayerScript.cs"
 "Assets/Script/SpawnPlayer.cs"
 -langversion:9.0
