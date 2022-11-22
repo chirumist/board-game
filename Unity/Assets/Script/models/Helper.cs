@@ -6,9 +6,14 @@ using UnityEngine.Networking;
 
 public class Helper : MonoBehaviour
 {
+    private static string token = PlayerPrefs.GetString("access_token");
+    private static string type = PlayerPrefs.GetString("token_type");
+
     internal static IEnumerator FetchData(string url, System.Action<string, bool> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get(url);
+
+        www.SetRequestHeader("Authorization", type+" "+ token);
 
         yield return www.SendWebRequest();
 
@@ -33,5 +38,10 @@ public class Helper : MonoBehaviour
                 callback(www.downloadHandler.text, true);
             }
         }
+    }
+
+    public void checkAuth()
+    {
+        //PlayerPrefs.DeleteKey("access_token");
     }
 }

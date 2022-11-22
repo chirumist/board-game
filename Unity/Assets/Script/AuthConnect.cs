@@ -12,9 +12,9 @@ public class AuthConnect : MonoBehaviour
 
     public ApiList apiList = new ApiList();
 
-    private string username, password;
+    [SerializeField] private string username, password;
 
-    private string usernameSignUp, emailSignUp, passwordSignUp, confirmPasswordSignUp;
+    [SerializeField] private string usernameSignUp, emailSignUp, passwordSignUp, confirmPasswordSignUp;
 
     public Button loginButton;
     public Button registerButton;
@@ -25,10 +25,10 @@ public class AuthConnect : MonoBehaviour
     {
         var token = PlayerPrefs.GetString("access_token");
         if (token != "") {
-            //SceneManager.LoadScene("Lobby");
+            SceneManager.LoadScene("Lobby");
         } else {
-        }
             changeToSignInTab();
+        }
     }
 
     public void changeToSignInTab()
